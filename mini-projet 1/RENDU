@@ -30,7 +30,11 @@ Questions sur votre code
    - Si non, expliquez en quelques phrases en français comment
      fonctionne votre implémentation de `simplifie`.
 
-**à remplir**
+Non, on a crée une fonction auxiliaire dans simplifie qui prend les mêmes arguments avec un argument en plus qui représente une liste de liste. On regarde dans les clauses si c'est vide c'est qu'on a finit on revoie donc la liste de liste en argument.
+Sinon on regarde clauses par clauses et si une clause contient l'élément en argument on n'ajoute pas la clause et on rappelle
+l'algorithme. Sinon on regarde élément par élément de la clause si elle contient l'élément négatif en argument en ajoute la sous-liste
+sans cet élément sinon on ajoute toute la clause sous forme de liste dans notre argument. On inverse la liste ensuite car les éléments
+sont ajouté à l'envers car nous utilisons (::).
 
 ---
 

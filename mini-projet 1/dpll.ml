@@ -39,15 +39,15 @@ let coloriage = [[1;2;3];[4;5;6];[7;8;9];[10;11;12];[13;14;15];[16;17;18];[19;20
    applique la simplification de l'ensemble des clauses en mettant
    le littéral l à vrai *)
 let rec simplifie l clauses =
-  let rec aux l clauses res =
+  let rec aux l clauses res = (* on fait une fonction auxiliaire qui prend en plus une liste de liste vide au début *)
     match clauses with
-    |[] -> res
-    |s :: sl -> if List.mem l s then aux l sl res
-                else match s with
+    |[] -> res (* si il n'y a plus de clauses on renvoie la liste de liste res *)
+    |s :: sl -> if List.mem l s then aux l sl res (* on vérifie si l est dans la liste si c'est le cas on continue sans rien ajouter à res *)
+                else match s with (* sinon on regarde les éléments de la liste si on trouve -l on ajoute la liste à res sans l'élément -l sinon on ajoute toute la clause dans res *)
                       |[] -> res
                       |x :: sx -> if x = -l then aux l sl (sx :: res)
                                   else aux l sl ((x :: sx) :: res)
-  in List.rev(aux l clauses []);;
+  in List.rev(aux l clauses []);; (* comme on ajoute les éléments à l'avant de la liste de liste il faut retourner la liste à l'envers *)
 
 (* solveur_split : int list list -> int list -> int list option
    exemple d'utilisation de `simplifie' *)
