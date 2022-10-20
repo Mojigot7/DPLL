@@ -103,19 +103,25 @@ let pur clauses =
     | e :: r -> if not (List.mem (-e) r) then e else aux2 (nettoye e r []) (*si dans la liste on trouve la negation de l'element actuel alors il n'est pas pur sinon il est pur et alors il faut l'isoler pour pouvoir le renvoyer a la fin en resultat de la fonction*)
   in aux2 (List.flatten clauses);;(*concatener les litteraux qui seront pur s'il y en a plus d'un*)
 
-(*pur [[1;3];[2];[-1;2];[-2;3];[-1;3]];; (*doit renvoyer 3*)*)
-(*pur [[1;3];[2];[-1;2];[2;3];[-1;-3]];; (*doit renvoyer 2*)*)
-(*pur [[1;3];[2];[-1;2];[-2;3];[-1;-3]];; (*doit renvoyer 'Failure "pas de litteral pur"' *)*)
+pur [[1;3];[2];[-1;2];[-2;3];[-1;3]];; (*doit renvoyer 3*)
+pur [[1;3];[2];[-1;2];[2;3];[-1;-3]];; (*doit renvoyer 2*)
+pur [[1;3];[2];[-1;2];[-2;3];[-1;-3]];; (*doit renvoyer 'Failure "pas de litteral pur"' *)
 (*pur [];; (*doit renvoyer 'Failure "pas de litteral pur"' *)*)
 
 (* solveur_dpll_rec : int list list -> int list -> int list option *)
 let rec solveur_dpll_rec clauses interpretation =
-  (* à compléter *)
-  None
-
+  if clauses = [] then Some interpretation (* si il n'y a plus de clauses alors on termine et on renvoie l'interprétation correspondante *)
+  else if List.mem [] clauses then None else (* si on a une clause vide dans la liste alors ce n'est pas satisfiable *) 
+  let checkLitteral = (* fonction qui s'occupe de trouver un littéral unitaire ou pur *)
+    try Some(unitaire clauses) with
+    |Not_found -> try Some(pur clauses) with
+                  |Failure(_) -> None
+  in match checkLitteral with
+  |None -> solveur_split clauses interpretation (* si on ne trouve pas de littéral seul ou pur on applique solveur_split qui simplifie les clauses littéral par littéral*)
+  |Some(s) -> solveur_dpll_rec (simplifie s clauses) (s :: interpretation) (* sinon on rappelle la fonction dpll en simplifiant avec le littéral trouvé et on l'ajoute dans interprétation *)
 (* tests *)
-(* let () = print_modele (solveur_dpll_rec systeme []) *)
-(* let () = print_modele (solveur_dpll_rec coloriage []) *)
+let () = print_modele (solveur_dpll_rec systeme [])
+let () = print_modele (solveur_dpll_rec coloriage [])
 
 let () =
   let clauses = Dimacs.parse Sys.argv.(1) in
