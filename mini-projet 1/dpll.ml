@@ -103,9 +103,9 @@ let pur clauses =
     | e :: r -> if not (List.mem (-e) r) then e else aux2 (nettoye e r []) (*si dans la liste on trouve la negation de l'element actuel alors il n'est pas pur sinon il est pur et alors il faut l'isoler pour pouvoir le renvoyer a la fin en resultat de la fonction*)
   in aux2 (List.flatten clauses);;(*concatener les litteraux qui seront pur s'il y en a plus d'un*)
 
-pur [[1;3];[2];[-1;2];[-2;3];[-1;3]];; (*doit renvoyer 3*)
+(*pur [[1;3];[2];[-1;2];[-2;3];[-1;3]];; (*doit renvoyer 3*)
 pur [[1;3];[2];[-1;2];[2;3];[-1;-3]];; (*doit renvoyer 2*)
-pur [[1;3];[2];[-1;2];[-2;3];[-1;-3]];; (*doit renvoyer 'Failure "pas de litteral pur"' *)
+pur [[1;3];[2];[-1;2];[-2;3];[-1;-3]];;*) (*doit renvoyer 'Failure "pas de litteral pur"' *)
 (*pur [];; (*doit renvoyer 'Failure "pas de litteral pur"' *)*)
 
 (* solveur_dpll_rec : int list list -> int list -> int list option *)
@@ -117,12 +117,20 @@ let rec solveur_dpll_rec clauses interpretation =
     |Not_found -> try Some(pur clauses) with
                   |Failure(_) -> None
   in match checkLitteral with
-  |None -> solveur_split clauses interpretation (* si on ne trouve pas de littéral seul ou pur on applique solveur_split qui simplifie les clauses littéral par littéral*)
-  |Some(s) -> solveur_dpll_rec (simplifie s clauses) (s :: interpretation) (* sinon on rappelle la fonction dpll en simplifiant avec le littéral trouvé et on l'ajoute dans interprétation *)
+     |Some(s) -> solveur_dpll_rec (simplifie s clauses) (s :: interpretation) (* sinon on rappelle la fonction dpll en simplifiant avec le littéral trouvé et on l'ajoute dans interprétation *)
+     |None -> let l = List.hd (List.hd clauses) in (* si on ne trouve pas de littéral seul ou pur on applique solveur_split qui simplifie les clauses littéral par littéral*)
+              let branche = solveur_dpll_rec (simplifie l clauses) (l::interpretation) in
+              match branche with
+              | None -> solveur_dpll_rec (simplifie (-l) clauses) ((-l)::interpretation)
+              | _    -> branche
 (* tests *)
-let () = print_modele (solveur_dpll_rec systeme [])
-let () = print_modele (solveur_dpll_rec coloriage [])
+(*let () = print_modele (solveur_dpll_rec exemple_3_12 []);;
+let () = print_modele (solveur_dpll_rec exemple_7_2 []);;
+let () = print_modele (solveur_dpll_rec exemple_7_4 []);;
+let () = print_modele (solveur_dpll_rec exemple_7_8 []);;
+let () = print_modele (solveur_dpll_rec systeme []);;
+let () = print_modele (solveur_dpll_rec coloriage []);;*)
 
 let () =
   let clauses = Dimacs.parse Sys.argv.(1) in
-  print_modele (solveur_dpll_rec clauses [])
+  print_modele (solveur_dpll_rec clauses []);;
