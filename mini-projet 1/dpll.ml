@@ -100,8 +100,8 @@ let pur clauses =
   let rec aux2 l =
     match l with
     | [] -> raise (Failure "pas de litteral pur")
-    | e :: r -> if not (List.mem (-e) r) then e else aux2 (nettoye e r []) (*si dans la liste on trouve la negation de l'element actuel alors il n'est pas pur sinon il est pur et alors il faut l'isoler pour pouvoir le renvoyer a la fin en resultat de la fonction*)
-  in aux2 (List.flatten clauses);;(*concatener les litteraux qui seront pur*)
+    | e :: r -> if not (List.mem (-e) r) then e else aux2 (nettoye e r []) (*si dans la liste on trouve la negation de l'element actuel alors il n'est pas pur et on continue de parcourir sinon il est pur et alors il faut l'isoler pour pouvoir le renvoyer a la fin en resultat de la fonction*)
+  in aux2 (List.flatten clauses);;
 
 (*pur [[1;3];[2];[-1;2];[-2;3];[-1;3]];; (*doit renvoyer 3*)
 pur [[1;3];[2];[-1;2];[2;3];[-1;-3]];; (*doit renvoyer 2*)
