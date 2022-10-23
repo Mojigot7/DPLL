@@ -64,7 +64,11 @@ sont ajouté à l'envers car nous utilisons (::).
    `solveur_split` et `solveur_dpll_rec` ont un comportement
    différent, et expliquez les différences entre ces deux fonctions.
 
-**à remplir**
+Par exemple sur cette formule [[1;-1;-3];[-2;3];[-2]]:
+solveur_split va appliquer le solveur littéral par littéral en commençant par 1 puis simplifie [[-2;3];[-2]] et ensuite applique sur -2 et trouve SAT 1 -2
+solveur_dpll_rec va appliquer d'abord sur les clauses unitaires donc ici -2 puis simplifie [[1;-1;-3]] et ensuite applique sur unitaire ou pur ici -3 est pur. Donc on trouve SAT -2 3
+solveur_dpll_rec sera plus rapide en général que solveur_split car il va chercher des littéraux seuls ou purs pour simplifier
+alors solveur_split applique bêtement littéral par littéral.
 
 ---
 

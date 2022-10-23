@@ -38,15 +38,14 @@ let coloriage = [[1;2;3];[4;5;6];[7;8;9];[10;11;12];[13;14;15];[16;17;18];[19;20
 (* simplifie : int -> int list list -> int list list 
    applique la simplification de l'ensemble des clauses en mettant
    le littéral l à vrai *)
-let rec simplifie l clauses =
+let simplifie l clauses =
   let rec aux l clauses res = (* on fait une fonction auxiliaire qui prend en plus une liste de liste vide au début *)
     match clauses with
     |[] -> res (* si il n'y a plus de clauses on renvoie la liste de liste res *)
     |s :: sl -> if List.mem l s then aux l sl res (* on vérifie si l est dans la liste si c'est le cas on continue sans rien ajouter à res *)
-                else match s with (* sinon on regarde les éléments de la liste si on trouve -l on ajoute la liste à res sans l'élément -l sinon on ajoute toute la clause dans res *)
+                else match s with (* sinon on regarde les éléments de la liste *)
                       |[] -> res
-                      |x :: sx -> if x = -l then aux l sl (sx :: res)
-                                  else aux l sl ((x :: sx) :: res)
+                      |_ -> aux l sl (((filter_map (fun x -> if x = -l then None else Some(x)) s)) :: res) (* si on trouve -l on ajoute la liste à res sans l'élément -l sinon on ajoute toute la clause dans res *)
   in List.rev(aux l clauses []);; (* comme on ajoute les éléments à l'avant de la liste de liste il faut retourner la liste à l'envers *)
 
 (* solveur_split : int list list -> int list -> int list option
@@ -103,9 +102,9 @@ let pur clauses =
     | e :: r -> if not (List.mem (-e) r) then e else aux2 (nettoye e r []) (*si dans la liste on trouve la negation de l'element actuel alors il n'est pas pur sinon il est pur et alors il faut l'isoler pour pouvoir le renvoyer a la fin en resultat de la fonction*)
   in aux2 (List.flatten clauses);;(*concatener les litteraux qui seront pur s'il y en a plus d'un*)
 
-pur [[1;3];[2];[-1;2];[-2;3];[-1;3]];; (*doit renvoyer 3*)
+(*pur [[1;3];[2];[-1;2];[-2;3];[-1;3]];; (*doit renvoyer 3*)
 pur [[1;3];[2];[-1;2];[2;3];[-1;-3]];; (*doit renvoyer 2*)
-pur [[1;3];[2];[-1;2];[-2;3];[-1;-3]];; (*doit renvoyer 'Failure "pas de litteral pur"' *)
+pur [[1;3];[2];[-1;2];[-2;3];[-1;-3]];;*) (*doit renvoyer 'Failure "pas de litteral pur"' *)
 (*pur [];; (*doit renvoyer 'Failure "pas de litteral pur"' *)*)
 
 (* solveur_dpll_rec : int list list -> int list -> int list option *)
@@ -114,15 +113,29 @@ let rec solveur_dpll_rec clauses interpretation =
   else if List.mem [] clauses then None else (* si on a une clause vide dans la liste alors ce n'est pas satisfiable *) 
   let checkLitteral = (* fonction qui s'occupe de trouver un littéral unitaire ou pur *)
     try Some(unitaire clauses) with
-    |Not_found -> try Some(pur clauses) with
-                  |Failure(_) -> None
+    |e -> try Some(pur clauses) with
+                  |e -> None
   in match checkLitteral with
-  |None -> solveur_split clauses interpretation (* si on ne trouve pas de littéral seul ou pur on applique solveur_split qui simplifie les clauses littéral par littéral*)
-  |Some(s) -> solveur_dpll_rec (simplifie s clauses) (s :: interpretation) (* sinon on rappelle la fonction dpll en simplifiant avec le littéral trouvé et on l'ajoute dans interprétation *)
+     |Some(s) -> solveur_dpll_rec (simplifie s clauses) (s :: interpretation) (* sinon on rappelle la fonction dpll en simplifiant avec le littéral trouvé et on l'ajoute dans interprétation *)
+     |None -> let l = List.hd (List.hd clauses) in (* si on ne trouve pas de littéral seul ou pur on simplifie les clauses littéral par littéral*)
+              let branche = solveur_dpll_rec (simplifie l clauses) (l::interpretation) in
+              match branche with
+              | None -> solveur_dpll_rec (simplifie (-l) clauses) ((-l)::interpretation) (* backtracking si l ne marche pas on applique sur -l *)
+              | _    -> branche
+
 (* tests *)
-let () = print_modele (solveur_dpll_rec systeme [])
-let () = print_modele (solveur_dpll_rec coloriage [])
+let () = print_modele (solveur_dpll_rec exemple_7_2 []);;
+(*let () = print_modele (solveur_dpll_rec exemple_7_4 []);;
+let () = print_modele (solveur_dpll_rec exemple_7_8 []);;
+let () = print_modele (solveur_dpll_rec systeme []);;
+let () = print_modele (solveur_dpll_rec coloriage []);;*)
+
+let () = print_modele (solveur_split exemple_7_2 []);;
+(*let () = print_modele (solveur_split exemple_7_4 []);;
+let () = print_modele (solveur_split exemple_7_8 []);;
+let () = print_modele (solveur_split systeme []);;
+let () = print_modele (solveur_split coloriage []);;*)
 
 let () =
   let clauses = Dimacs.parse Sys.argv.(1) in
-  print_modele (solveur_dpll_rec clauses [])
+  print_modele (solveur_dpll_rec clauses []);;
