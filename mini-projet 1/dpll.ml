@@ -79,7 +79,7 @@ let rec unitaire clauses =
   | [] -> raise Not_found (*on ne peut pas verifier quelque chose de vide donc exception*)
   | l :: r -> if List.length l = 1 then List.hd(l) else unitaire r;;(*si la taille de la clause est de 1 alors il n'y a bien qu'un seul element et on le renvoie sinon on continue de parcourir*)
   
-(*la fonction auxiliaire nettoye va servir a nettoyer la liste pour qu'il ne reste que les litteraux pur (s'il y en a plusieurs sinon au moins un).
+(*la fonction auxiliaire nettoye va servir a nettoyer la liste pour qu'il ne reste que le littera pur.
   Elle prend un litteral, une liste de clause et une liste VIDE:
   - si l'element actuel est egal au litteral ou a la negation du litteral on continue de parcourir en rappelant recursivement la fonction
   - sinon on va rappeler la fonction mais en 3eme argument on mettra l'element actuel a vide
@@ -99,8 +99,8 @@ let pur clauses =
   let rec aux2 l =
     match l with
     | [] -> raise (Failure "pas de litteral pur")
-    | e :: r -> if not (List.mem (-e) r) then e else aux2 (nettoye e r []) (*si dans la liste on trouve la negation de l'element actuel alors il n'est pas pur sinon il est pur et alors il faut l'isoler pour pouvoir le renvoyer a la fin en resultat de la fonction*)
-  in aux2 (List.flatten clauses);;(*concatener les litteraux qui seront pur s'il y en a plus d'un*)
+    | e :: r -> if not (List.mem (-e) r) then e else aux2 (nettoye e r []) (*si dans la liste on trouve la negation de l'element actuel alors il n'est pas pur et on continue de parcourir sinon il est pur et alors il faut l'isoler pour pouvoir le renvoyer a la fin en resultat de la fonction*)
+  in aux2 (List.flatten clauses);;
 
 (*pur [[1;3];[2];[-1;2];[-2;3];[-1;3]];; (*doit renvoyer 3*)
 pur [[1;3];[2];[-1;2];[2;3];[-1;-3]];; (*doit renvoyer 2*)
