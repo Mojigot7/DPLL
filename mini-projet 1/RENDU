@@ -47,7 +47,9 @@ sont ajouté à l'envers car nous utilisons (::).
    comment ces fonctions auxiliaires sont utilisées dans votre
    implémentation de la fonction `unitaire`.
 
-**à remplir**
+Pour la fonction unitaire nous avons utilisé les fonctions auxiliaires qui existent déjà dans la bibliothèque List qui sont List.length et List.hd.
+List.lenght dans la fonction unitaire nous sert à vérifier si la taille de la clause est égal à 1.
+Lits.hd dans la fonction unitaire nous sert dans le coup où List.length de la clause est bien de 1 à renvoyer l'élément actuel qui est en tête de la liste.
 
 ---
 
@@ -56,8 +58,26 @@ sont ajouté à l'envers car nous utilisons (::).
    quelques phrases en français comment ces fonctions auxiliaires sont
    utilisées dans votre implémentation de la fonction `pur`.
 
-**à remplir**
+Pour la fonction pur nous avons utilisé plusieurs fonctions auxiliaires.
+Celles qu'on a utilisé et qui existent déjà dans la bibliothèque List sont List.mem et List.flatten.
 
+Nous utilisons List.mem dans notre programme de la manière suivante :
+   Nous parcourons la liste et à chaque litteral de la liste nous regardons si dans l'entièreté de la list il n'y a pas le litteral en question sous sa négation. Si on trouve sa négation alors on passe au litteral suivant et on rappelle List.mem.
+
+Nous avons également utiliser List.flatten dans notre programme de la manière suivante :
+    A la fin de la fonction pur on appelle la fonction auxiliaire récursive que l'on a crée qui est aux2 qui va prendre en argument la liste de littéraux en y appliquant List.flatten.
+    la fonction aux2 renvoie une liste et étant une fonction récursive on se retrouve avec plusieurs liste à la fin donc List.flatten va se charger de concaténer toute les listes en une seule qui sera le résultat final.
+
+Nous avons également crée 2 fonctions auxiliaires qui sont aux2 (dont nous avons parlé plus haut) et nettoye.
+
+Nous avons utilisé la fonction aux2 dans notre programme de la manière suivante :
+   aux2 nous sert à isoler le litteral de la formule et de gérer l'exception de si la fonction est vide. Elle va renvoyer à chaque appel une liste donc le résultat final sera de plusieurs listes d'où l'utilité de List.flatten pour concaténer toute les listes pour renvoyer juste une liste (qui sera juste le litteral pur).
+
+Nous avons utilisé la fonction nettoye dans notre programme de la manière suivante :
+la fonction auxiliaire nettoye va servir a nettoyer la liste pour qu'il ne reste que le littera pur.
+  Elle prend un litteral, une liste de clause et une liste VIDE.
+  Si l'element actuel est egal au litteral ou a la negation du litteral on continue de parcourir en rappelant recursivement la fonction. Sinon on va rappeler la fonction mais en 3eme argument on mettra l'element actuel a vide et si la liste est vide on renvoie juste la liste vide.
+  
 ---
 
 4. Donnez un exemple d'une formule pour laquelle les deux fonctions
