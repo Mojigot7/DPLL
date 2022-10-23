@@ -124,14 +124,14 @@ let rec solveur_dpll_rec clauses interpretation =
               | _    -> branche
 
 (* tests *)
-let () = print_modele (solveur_dpll_rec exemple_7_2 []);;
-(*let () = print_modele (solveur_dpll_rec exemple_7_4 []);;
+(*let () = print_modele (solveur_dpll_rec exemple_7_2 []);;
+let () = print_modele (solveur_dpll_rec exemple_7_4 []);;
 let () = print_modele (solveur_dpll_rec exemple_7_8 []);;
 let () = print_modele (solveur_dpll_rec systeme []);;
 let () = print_modele (solveur_dpll_rec coloriage []);;*)
 
-let () = print_modele (solveur_split exemple_7_2 []);;
-(*let () = print_modele (solveur_split exemple_7_4 []);;
+(*let () = print_modele (solveur_split exemple_7_2 []);;
+let () = print_modele (solveur_split exemple_7_4 []);;
 let () = print_modele (solveur_split exemple_7_8 []);;
 let () = print_modele (solveur_split systeme []);;
 let () = print_modele (solveur_split coloriage []);;*)
